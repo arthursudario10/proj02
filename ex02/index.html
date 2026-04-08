@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Cafeteria Gourmet</title>
+</head>
+<body>
+
+  <h1>Sistema da Cafeteria Gourmet ☕</h1>
+  <button onclick="iniciarPedido()">Fazer Pedido</button>
+
+  <script>
+    function iniciarPedido() {
+      let valorPedido = parseFloat(prompt("Digite o valor do pedido:"));
+      let valorFinal = valorPedido;
+      let mensagem = "";
+
+      if (isNaN(valorPedido) || valorPedido <= 0) {
+        alert("Valor inválido.");
+        return;
+      }
+
+      if (valorPedido > 50) {
+        let fidelidade = prompt("Você possui cartão fidelidade? (S/N)");
+
+        if (fidelidade && fidelidade.toLowerCase().startsWith("s")) {
+          valorFinal = valorPedido * 0.90;
+          mensagem = "Você recebeu 10% de desconto!";
+        } else if (fidelidade && fidelidade.toLowerCase().startsWith("n")) {
+          mensagem = "Você ganhou um cookie de brinde! 🍪";
+        } else {
+          mensagem = "Resposta inválida para o cartão fidelidade.";
+        }
+
+      } else {
+        mensagem = "Compra abaixo de R$50,00 - sem benefícios.";
+      }
+
+      alert("Valor final: R$ " + valorFinal.toFixed(2) + "\n" + mensagem);
+    }
+  </script>
+
+</body>
+</html>
