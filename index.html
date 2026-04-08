@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Concessionária</title>
+</head>
+<body>
+  <script>
+    let valorCarro = parseFloat(prompt("Digite o valor do carro:"));
+    let formaPagamento = prompt("Escolha:\n1 - PIX\n2 - Cartão\n3 - Financiamento");
+
+    let valorFinal = 0;
+    let parcelas = 0;
+    let valorParcela = 0;
+
+    if (formaPagamento === "1") {
+        valorFinal = valorCarro * 0.85;
+        alert("Valor final: R$ " + valorFinal.toFixed(2));
+
+    } else if (formaPagamento === "2") {
+        valorFinal = valorCarro * 1.05;
+        parcelas = parseInt(prompt("Parcelas (máx 24)"));
+
+        if (parcelas > 0 && parcelas <= 24) {
+            valorParcela = valorFinal / parcelas;
+            alert(`Total: R$ ${valorFinal.toFixed(2)}\n${parcelas}x de R$ ${valorParcela.toFixed(2)}`);
+        } else {
+            alert("Parcelas inválidas");
+        }
+
+    } else if (formaPagamento === "3") {
+        valorFinal = valorCarro * 1.20;
+        parcelas = parseInt(prompt("Parcelas (máx 48)"));
+
+        if (parcelas > 0 && parcelas <= 48) {
+            valorParcela = valorFinal / parcelas;
+            alert(`Total: R$ ${valorFinal.toFixed(2)}\n${parcelas}x de R$ ${valorParcela.toFixed(2)}`);
+        } else {
+            alert("Parcelas inválidas");
+        }
+
+    } else {
+        alert("Opção inválida");
+    }
+  </script>
+</body>
+</html>
