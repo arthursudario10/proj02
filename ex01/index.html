@@ -1,46 +1,170 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 <head>
-  <title>Concessionária</title>
+  <meta charset="UTF-8">
+  <title>Concessionária - Simulação de Pagamento</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      background: #fff;
+      padding: 24px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      width: 360px;
+    }
+
+    h2 {
+      margin-bottom: 16px;
+      text-align: center;
+    }
+
+    label {
+      display: block;
+      margin-top: 12px;
+      font-size: 14px;
+    }
+
+    input, select, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 6px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+
+    button {
+      background: #27ae60;
+      color: white;
+      border: none;
+      margin-top: 16px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #1e874b;
+    }
+
+    .resultado {
+      margin-top: 16px;
+      padding: 12px;
+      background: #eef6ff;
+      border-radius: 8px;
+      display: none;
+    }
+
+    .erro {
+      color: red;
+      font-size: 12px;
+      margin-top: 8px;
+    }
+  </style>
 </head>
 <body>
+
+  <div class="container">
+    <h2>Simulação de Pagamento</h2>
+
+    <form id="formPagamento">
+      <label for="valorCarro">Valor do Carro (R$)</label>
+      <input type="number" id="valorCarro" step="0.01" min="0" required>
+
+      <label for="pagamento">Forma de Pagamento</label>
+      <select id="pagamento" required>
+        <option value="">Selecione...</option>
+        <option value="pix">À vista no PIX (15% desconto)</option>
+        <option value="cartao">Cartão (até 24x - 5% juros)</option>
+        <option value="financiamento">Financiamento (até 48x - 20% juros)</option>
+      </select>
+
+      <label for="parcelas">Número de Parcelas</label>
+      <input type="number" id="parcelas" min="1" placeholder="Ex: 12">
+
+      <div id="erro" class="erro"></div>
+
+      <button type="submit">Calcular</button>
+    </form>
+
+    <div id="resultado" class="resultado"></div>
+  </div>
+
   <script>
-    let valorCarro = parseFloat(prompt("Digite o valor do carro:"));
-    let formaPagamento = prompt("Escolha:\n1 - PIX\n2 - Cartão\n3 - Financiamento");
+    const formatarMoeda = (valor) => {
+      return valor.toLocaleString("pt-BR", {
+        style: "currency",
+        currency: "BRL"
+      });
+    };
 
-    let valorFinal = 0;
-    let parcelas = 0;
-    let valorParcela = 0;
+    document.getElementById("formPagamento").addEventListener("submit", function(e) {
+      e.preventDefault();
 
-    if (formaPagamento === "1") {
-        valorFinal = valorCarro * 0.85;
-        alert("Valor final: R$ " + valorFinal.toFixed(2));
+      const valor = parseFloat(document.getElementById("valorCarro").value);
+      const pagamento = document.getElementById("pagamento").value;
+      const parcelasInput = parseInt(document.getElementById("parcelas").value);
 
-    } else if (formaPagamento === "2") {
-        valorFinal = valorCarro * 1.05;
-        parcelas = parseInt(prompt("Parcelas (máx 24)"));
+      const erro = document.getElementById("erro");
+      const resultado = document.getElementById("resultado");
 
-        if (parcelas > 0 && parcelas <= 24) {
-            valorParcela = valorFinal / parcelas;
-            alert(`Total: R$ ${valorFinal.toFixed(2)}\n${parcelas}x de R$ ${valorParcela.toFixed(2)}`);
-        } else {
-            alert("Parcelas inválidas");
+      erro.textContent = "";
+      resultado.style.display = "none";
+
+      if (!valor || valor <= 0) {
+        erro.textContent = "Informe um valor válido.";
+        return;
+      }
+
+      let valorFinal = valor;
+      let parcelas = 1;
+
+      if (pagamento === "pix") {
+        valorFinal = valor * 0.85;
+        parcelas = 1;
+      } 
+      else if (pagamento === "cartao") {
+        if (!parcelasInput || parcelasInput < 1 || parcelasInput > 24) {
+          erro.textContent = "Parcelas no cartão devem ser entre 1 e 24.";
+          return;
         }
-
-    } else if (formaPagamento === "3") {
-        valorFinal = valorCarro * 1.20;
-        parcelas = parseInt(prompt("Parcelas (máx 48)"));
-
-        if (parcelas > 0 && parcelas <= 48) {
-            valorParcela = valorFinal / parcelas;
-            alert(`Total: R$ ${valorFinal.toFixed(2)}\n${parcelas}x de R$ ${valorParcela.toFixed(2)}`);
-        } else {
-            alert("Parcelas inválidas");
+        valorFinal = valor * 1.05;
+        parcelas = parcelasInput;
+      } 
+      else if (pagamento === "financiamento") {
+        if (!parcelasInput || parcelasInput < 1 || parcelasInput > 48) {
+          erro.textContent = "Parcelas no financiamento devem ser entre 1 e 48.";
+          return;
         }
+        valorFinal = valor * 1.20;
+        parcelas = parcelasInput;
+      } 
+      else {
+        erro.textContent = "Selecione uma forma de pagamento.";
+        return;
+      }
 
-    } else {
-        alert("Opção inválida");
-    }
+      const valorParcela = valorFinal / parcelas;
+
+      resultado.style.display = "block";
+      resultado.innerHTML = `
+        <strong>Resultado:</strong><br>
+        Valor Final: ${formatarMoeda(valorFinal)}<br>
+        ${parcelas > 1 
+          ? `Parcelas: ${parcelas}x de ${formatarMoeda(valorParcela)}`
+          : `Pagamento à vista`
+        }
+      `;
+    });
   </script>
+
 </body>
 </html>
